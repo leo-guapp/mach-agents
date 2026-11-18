@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mach.local/contracts/1.1/accessibility_request.schema.json",
+  "$defs": {
+    "AccessItem": {
+      "additionalProperties": false,
+      "properties": {
+        "ref_id": {
+          "title": "Ref Id",
+          "type": "string"
+        },
+        "ref_type": {
+          "enum": [
+            "route",
+            "facility",
+            "stop"
+          ],
+          "title": "Ref Type",
+          "type": "string"
+        },
+        "stops": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stops"
+        }
+      },
+      "required": [
+        "ref_id",
+        "ref_type"
+      ],
+      "title": "AccessItem",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Argomenti della skill verify_accessibility: DataPart {\"skill\": \"verify_accessibility\", \"args\": {...}}.",
+  "properties": {
+    "profile_tags": {
+      "items": {
+        "pattern": "^(wheelchair|reduced_mobility|blind|low_vision|deaf|hard_of_hearing|cognitive|easy_read|lang:[a-z]{2})$",
+        "type": "string"
+      },
+      "title": "Profile Tags",
+      "type": "array"
+    },
+    "consent": {
+      "default": false,
+      "description": "true se il cittadino ha acconsentito a condividere i profile_tags",
+      "title": "Consent",
+      "type": "boolean"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/AccessItem"
+      },
+      "minItems": 1,
+      "title": "Items",
+      "type": "array"
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "title": "AccessibilityRequest",
+  "type": "object"
+}

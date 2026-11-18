@@ -1,0 +1,475 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mach.local/contracts/1.1/mobility_data.schema.json",
+  "$defs": {
+    "Alert": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        }
+      },
+      "required": [
+        "code",
+        "text"
+      ],
+      "title": "Alert",
+      "type": "object"
+    },
+    "GeoPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "lat": {
+          "anyOf": [
+            {
+              "maximum": 90,
+              "minimum": -90,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lat"
+        },
+        "lon": {
+          "anyOf": [
+            {
+              "maximum": 180,
+              "minimum": -180,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lon"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "id di un oggetto di un altro agente, es. 'fac-12'",
+          "title": "Ref"
+        }
+      },
+      "required": [
+        "label"
+      ],
+      "title": "GeoPoint",
+      "type": "object"
+    },
+    "Issue": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "title": "Code",
+          "type": "string"
+        },
+        "where": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Where"
+        },
+        "severity": {
+          "enum": [
+            "blocking",
+            "warning",
+            "info"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "since": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Since"
+        }
+      },
+      "required": [
+        "code",
+        "severity"
+      ],
+      "title": "Issue",
+      "type": "object"
+    },
+    "Leg": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "metro",
+            "tram",
+            "bus",
+            "train",
+            "walk",
+            "taxi"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "from": {
+          "title": "From",
+          "type": "string"
+        },
+        "to": {
+          "title": "To",
+          "type": "string"
+        },
+        "depart_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depart At"
+        },
+        "arrive_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Arrive At"
+        },
+        "duration_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Min"
+        },
+        "distance_m": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distance M"
+        },
+        "realtime": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "true = orari live, false = orari statici",
+          "title": "Realtime"
+        }
+      },
+      "required": [
+        "mode",
+        "from",
+        "to"
+      ],
+      "title": "Leg",
+      "type": "object"
+    },
+    "MobilityQuery": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/GeoPoint"
+        },
+        "destination": {
+          "$ref": "#/$defs/GeoPoint"
+        },
+        "depart_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depart At"
+        },
+        "arrive_by": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Arrive By"
+        },
+        "profile_tags": {
+          "items": {
+            "pattern": "^(wheelchair|reduced_mobility|blind|low_vision|deaf|hard_of_hearing|cognitive|easy_read|lang:[a-z]{2})$",
+            "type": "string"
+          },
+          "title": "Profile Tags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "origin",
+        "destination"
+      ],
+      "title": "MobilityQuery",
+      "type": "object"
+    },
+    "RouteAccessibility": {
+      "additionalProperties": false,
+      "properties": {
+        "verification": {
+          "enum": [
+            "verified",
+            "partial",
+            "unverified"
+          ],
+          "title": "Verification",
+          "type": "string"
+        },
+        "step_free": {
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ],
+          "title": "Step Free",
+          "type": "string"
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/Issue"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verification",
+        "step_free",
+        "source"
+      ],
+      "title": "RouteAccessibility",
+      "type": "object"
+    },
+    "RouteOption": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "rank": {
+          "minimum": 1,
+          "title": "Rank",
+          "type": "integer"
+        },
+        "profile_fit": {
+          "description": "Adeguatezza rispetto ai profile_tags: un'opzione blocked non va mai in cima",
+          "enum": [
+            "ok",
+            "warning",
+            "blocked",
+            "unknown"
+          ],
+          "title": "Profile Fit",
+          "type": "string"
+        },
+        "duration_min": {
+          "minimum": 0,
+          "title": "Duration Min",
+          "type": "integer"
+        },
+        "cost_eur": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Eur"
+        },
+        "transfers": {
+          "minimum": 0,
+          "title": "Transfers",
+          "type": "integer"
+        },
+        "co2_saved_g": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Stima rispetto all'auto",
+          "title": "Co2 Saved G"
+        },
+        "legs": {
+          "items": {
+            "$ref": "#/$defs/Leg"
+          },
+          "minItems": 1,
+          "title": "Legs",
+          "type": "array"
+        },
+        "accessibility": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RouteAccessibility"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "alerts": {
+          "items": {
+            "$ref": "#/$defs/Alert"
+          },
+          "title": "Alerts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "rank",
+        "profile_fit",
+        "duration_min",
+        "transfers",
+        "legs"
+      ],
+      "title": "RouteOption",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "query": {
+      "$ref": "#/$defs/MobilityQuery"
+    },
+    "ranking_criteria": {
+      "items": {
+        "enum": [
+          "barriers",
+          "duration",
+          "cost",
+          "transfers",
+          "co2"
+        ],
+        "type": "string"
+      },
+      "title": "Ranking Criteria",
+      "type": "array"
+    },
+    "options": {
+      "items": {
+        "$ref": "#/$defs/RouteOption"
+      },
+      "title": "Options",
+      "type": "array"
+    }
+  },
+  "required": [
+    "query",
+    "ranking_criteria",
+    "options"
+  ],
+  "title": "MobilityData",
+  "type": "object"
+}

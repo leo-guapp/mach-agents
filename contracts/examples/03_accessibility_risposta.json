@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.1",
+  "agent": { "id": "mach:accessibility", "domain": "accessibility", "version": "0.2.0" },
+  "trace_id": "tr-7f3a",
+  "subtask_id": null,
+  "skill": "verify_accessibility",
+  "generated_at": "2026-11-21T10:02:13Z",
+  "status": "SUCCESS",
+  "confidence": 1.0,
+  "ttl_seconds": 600,
+  "provenance": [
+    { "source": "Stato ascensori ATM", "channel": "api", "fetched_at": "2026-11-21T10:02:12Z", "stale": false, "simulated": true },
+    { "source": "Schede accessibilità strutture", "channel": "rag", "fetched_at": "2026-11-21T10:02:12Z", "stale": false, "simulated": true }
+  ],
+  "data": {
+    "results": [
+      {
+        "ref_id": "mob-opt-1",
+        "ref_type": "route",
+        "verification": "verified",
+        "features": { "step_free": "no", "elevator": "yes", "audio_announcements": "yes" },
+        "issues": [ { "code": "ELEVATOR_DOWN", "where": "Loreto", "severity": "blocking", "since": "2026-11-21T07:00:00Z" } ],
+        "last_verified": "2026-11-21T09:50:00Z"
+      },
+      {
+        "ref_id": "mob-opt-2",
+        "ref_type": "route",
+        "verification": "partial",
+        "features": { "step_free": "yes", "audio_announcements": "unknown" },
+        "issues": [],
+        "last_verified": "2026-11-21T09:50:00Z"
+      },
+      {
+        "ref_id": "fac-12",
+        "ref_type": "facility",
+        "verification": "verified",
+        "features": { "step_free": "yes", "accessible_toilet": "yes", "accessible_parking": "yes", "language_mediation": "yes" },
+        "issues": [],
+        "last_verified": "2026-10-02T00:00:00Z"
+      }
+    ],
+    "adapted_text": { "lang": "en", "text": "Take the bus. The lift at Loreto metro is broken.", "easy_read": true }
+  },
+  "actions": [],
+  "suggested_followups": [],
+  "errors": [],
+  "user_message": {
+    "lang": "en",
+    "text": "The facility is step-free. The metro route via Loreto is blocked: the lift is out of service.",
+    "easy_read": "Take the bus. The lift at Loreto metro is broken."
+  }
+}

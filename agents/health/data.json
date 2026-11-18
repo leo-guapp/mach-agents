@@ -1,0 +1,47 @@
+{
+  "_nota": "DATI SIMULATI per il prototipo. Strutture, orari e disponibilità non sono reali. Sostituire con fonti verificate.",
+  "emergenza_parole": ["dolore al petto", "non respira", "fatica a respirare", "svenuto", "perde sangue", "emorragia", "paralisi", "convulsioni", "ictus", "infarto", "overdose"],
+  "percorsi": [
+    {
+      "id": "prescrizione_presente",
+      "parole_chiave": ["ricetta", "prescrizione", "impegnativa", "prenotare", "prenotazione", "cup"],
+      "titolo": "Hai una prescrizione e devi prenotare",
+      "passi": [
+        {"chi": "Portale regionale PrenotaSalute", "cosa": "Prenota online con il numero della ricetta elettronica (NRE) e il codice fiscale", "dati": ["NRE", "codice fiscale"], "fonte": "PrenotaSalute (Regione Lombardia)", "url": "https://www.prenotasalute.regione.lombardia.it"},
+        {"chi": "Contact Center regionale o sportello CUP", "cosa": "In alternativa, prenota per telefono o di persona", "dati": ["ricetta", "tessera sanitaria"], "fonte": "Regione Lombardia", "url": null}
+      ]
+    },
+    {
+      "id": "sintomo_senza_prescrizione",
+      "parole_chiave": ["mal", "dolore", "schiena", "sintomo", "visita", "male", "aiuto", "medico", "sto male"],
+      "titolo": "Hai un disturbo e non sai a chi rivolgerti",
+      "passi": [
+        {"chi": "Medico di medicina generale (medico curante)", "cosa": "Prima valutazione clinica ed eventuale prescrizione", "dati": ["tessera sanitaria"], "fonte": "Indicazione generale (da verificare)", "url": null},
+        {"chi": "Portale PrenotaSalute o CUP", "cosa": "Se il medico prescrive una visita, prenotala con la ricetta", "dati": ["NRE", "codice fiscale"], "fonte": "PrenotaSalute (Regione Lombardia)", "url": "https://www.prenotasalute.regione.lombardia.it"}
+      ]
+    },
+    {
+      "id": "servizi_territoriali",
+      "parole_chiave": ["anziano", "assistenza", "domiciliare", "casa di comunità", "fragile", "solo", "caregiver", "infermiere"],
+      "titolo": "Servizi territoriali e di assistenza",
+      "passi": [
+        {"chi": "Punto Unico di Accesso (PUA) della Casa di Comunità", "cosa": "Orientamento ai servizi socio-sanitari del territorio", "dati": ["tessera sanitaria"], "fonte": "ASST di riferimento (da verificare)", "url": null},
+        {"chi": "Servizi sociali del Comune di Milano", "cosa": "Se servono supporti sociali (assistenza, contributi)", "dati": ["documento d'identità"], "fonte": "Comune di Milano", "url": "https://www.comune.milano.it"}
+      ]
+    }
+  ],
+  "strutture": [
+    {"id": "niguarda", "nome": "Ospedale Niguarda (dati simulati)", "indirizzo": "Piazza dell'Ospedale Maggiore 3", "fermata": "Ca' Granda", "zona": "niguarda"},
+    {"id": "fbf", "nome": "Presidio Fatebenefratelli (dati simulati)", "indirizzo": "Corso di Porta Nuova 23", "fermata": "Moscova", "zona": "brera"},
+    {"id": "cdc_loreto", "nome": "Casa di Comunità Loreto (simulata)", "indirizzo": "Via di esempio 1", "fermata": "Loreto", "zona": "loreto"}
+  ],
+  "prestazioni": ["visita ortopedica", "visita cardiologica", "visita dermatologica", "fisioterapia"],
+  "slot": [
+    {"id": "S1", "prestazione": "visita ortopedica", "struttura_id": "niguarda", "data": "2026-11-27", "ora": "09:30"},
+    {"id": "S2", "prestazione": "visita ortopedica", "struttura_id": "fbf", "data": "2026-12-02", "ora": "14:00"},
+    {"id": "S3", "prestazione": "visita ortopedica", "struttura_id": "cdc_loreto", "data": "2026-12-05", "ora": "11:15"},
+    {"id": "S4", "prestazione": "visita cardiologica", "struttura_id": "niguarda", "data": "2026-12-01", "ora": "10:00"},
+    {"id": "S5", "prestazione": "visita dermatologica", "struttura_id": "fbf", "data": "2026-11-30", "ora": "16:30"},
+    {"id": "S6", "prestazione": "fisioterapia", "struttura_id": "cdc_loreto", "data": "2026-11-26", "ora": "08:45"}
+  ]
+}

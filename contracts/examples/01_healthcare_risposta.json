@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.1",
+  "agent": { "id": "mach:healthcare", "domain": "healthcare", "version": "0.2.0" },
+  "trace_id": "tr-7f3a",
+  "subtask_id": "subtask-1",
+  "skill": "cerca_disponibilita",
+  "generated_at": "2026-11-21T10:01:40Z",
+  "status": "PARTIAL",
+  "confidence": 0.7,
+  "ttl_seconds": 120,
+  "provenance": [
+    { "source": "CUP", "channel": "api", "fetched_at": "2026-11-21T10:01:37Z", "stale": false, "simulated": true }
+  ],
+  "data": {
+    "query": { "service_code": "visita-cardiologica", "area": "Milano Nord-Est", "priority_class": "D", "prescription": "present" },
+    "slots": [
+      {
+        "id": "hc-slot-1",
+        "service": { "code": "visita-cardiologica", "label": "Visita cardiologica" },
+        "facility": { "id": "fac-12", "name": "Poliambulatorio Esempio (simulato)", "type": "public",
+                      "address": "Via Esempio 12, Milano", "lat": 45.4880, "lon": 9.2170 },
+        "start": "2026-12-03T09:15:00Z",
+        "cost": { "value": 36.15, "currency": "EUR", "type": "ticket" },
+        "booking": { "platform": "CUP", "adapter": "cup", "channel": "api" }
+      }
+    ],
+    "platforms_checked": [
+      { "adapter": "cup", "status": "SUCCESS" },
+      { "adapter": "privati", "status": "UNAVAILABLE" }
+    ],
+    "handoff": { "required": false, "reason": null, "queue_id": null }
+  },
+  "actions": [
+    {
+      "id": "act-1",
+      "type": "book",
+      "target": "hc-slot-1",
+      "summary": "Prenotare la visita cardiologica del 3 dicembre alle 10:15 al Poliambulatorio Esempio",
+      "requires_consent": true,
+      "idempotency_key": "tr-7f3a:hc-slot-1",
+      "expires_at": "2026-11-21T10:12:00Z",
+      "params": {}
+    }
+  ],
+  "suggested_followups": [
+    { "domain": "mobility", "skill": "percorso", "reason": "Come raggiungere fac-12",
+      "input_ref": "hc-slot-1", "args": { "destinazione": "fac-12" } }
+  ],
+  "errors": [ { "code": "ADAPTER_UNAVAILABLE", "source": "privati", "retryable": true } ],
+  "user_message": {
+    "lang": "it",
+    "text": "Primo posto libero: 3 dicembre alle 10:15 al Poliambulatorio Esempio. Vuoi prenotare?",
+    "easy_read": "C'è un posto il 3 dicembre alle 10:15. Vuoi prenotare?"
+  }
+}

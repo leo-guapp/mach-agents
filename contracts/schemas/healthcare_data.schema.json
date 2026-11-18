@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mach.local/contracts/1.1/healthcare_data.schema.json",
+  "$defs": {
+    "BookingChannel": {
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "title": "Platform",
+          "type": "string"
+        },
+        "adapter": {
+          "title": "Adapter",
+          "type": "string"
+        },
+        "channel": {
+          "$ref": "#/$defs/Channel"
+        }
+      },
+      "required": [
+        "platform",
+        "adapter",
+        "channel"
+      ],
+      "title": "BookingChannel",
+      "type": "object"
+    },
+    "Channel": {
+      "enum": [
+        "api",
+        "cache",
+        "rag",
+        "rpa",
+        "a2a",
+        "fallback",
+        "mock"
+      ],
+      "title": "Channel",
+      "type": "string"
+    },
+    "Cost": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "minimum": 0,
+          "title": "Value",
+          "type": "number"
+        },
+        "currency": {
+          "const": "EUR",
+          "default": "EUR",
+          "title": "Currency",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "ticket",
+            "exempt",
+            "private_fee",
+            "unknown"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "type"
+      ],
+      "title": "Cost",
+      "type": "object"
+    },
+    "Facility": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "public",
+            "private_accredited",
+            "private"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Address"
+        },
+        "lat": {
+          "anyOf": [
+            {
+              "maximum": 90,
+              "minimum": -90,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lat"
+        },
+        "lon": {
+          "anyOf": [
+            {
+              "maximum": 180,
+              "minimum": -180,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lon"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type"
+      ],
+      "title": "Facility",
+      "type": "object"
+    },
+    "Handoff": {
+      "additionalProperties": false,
+      "properties": {
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "queue_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Queue Id"
+        }
+      },
+      "required": [
+        "required"
+      ],
+      "title": "Handoff",
+      "type": "object"
+    },
+    "HealthcareQuery": {
+      "additionalProperties": false,
+      "properties": {
+        "service_code": {
+          "title": "Service Code",
+          "type": "string"
+        },
+        "area": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Area"
+        },
+        "priority_class": {
+          "anyOf": [
+            {
+              "enum": [
+                "U",
+                "B",
+                "D",
+                "P"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Classe di priorità della ricetta: U 72h, B 10gg, D 30/60gg, P programmabile",
+          "title": "Priority Class"
+        },
+        "prescription": {
+          "enum": [
+            "present",
+            "absent",
+            "unknown"
+          ],
+          "title": "Prescription",
+          "type": "string"
+        }
+      },
+      "required": [
+        "service_code",
+        "prescription"
+      ],
+      "title": "HealthcareQuery",
+      "type": "object"
+    },
+    "PlatformCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter": {
+          "title": "Adapter",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "SUCCESS",
+            "PARTIAL",
+            "UNAVAILABLE",
+            "ERROR"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "adapter",
+        "status"
+      ],
+      "title": "PlatformCheck",
+      "type": "object"
+    },
+    "ServiceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "label"
+      ],
+      "title": "ServiceRef",
+      "type": "object"
+    },
+    "Slot": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "service": {
+          "$ref": "#/$defs/ServiceRef"
+        },
+        "facility": {
+          "$ref": "#/$defs/Facility"
+        },
+        "start": {
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        },
+        "cost": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Cost"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "booking": {
+          "$ref": "#/$defs/BookingChannel"
+        }
+      },
+      "required": [
+        "id",
+        "service",
+        "facility",
+        "start",
+        "booking"
+      ],
+      "title": "Slot",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "query": {
+      "$ref": "#/$defs/HealthcareQuery"
+    },
+    "slots": {
+      "items": {
+        "$ref": "#/$defs/Slot"
+      },
+      "title": "Slots",
+      "type": "array"
+    },
+    "platforms_checked": {
+      "items": {
+        "$ref": "#/$defs/PlatformCheck"
+      },
+      "title": "Platforms Checked",
+      "type": "array"
+    },
+    "handoff": {
+      "$ref": "#/$defs/Handoff"
+    }
+  },
+  "required": [
+    "query",
+    "handoff"
+  ],
+  "title": "HealthcareData",
+  "type": "object"
+}

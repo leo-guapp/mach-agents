@@ -1,0 +1,8 @@
+{
+  "_nota": "Informazioni di accessibilità SIMULATE. Da sostituire con dati verificati dalle strutture.",
+  "sedi": {
+    "niguarda": {"nome": "Ospedale Niguarda (dati simulati)", "ingresso_senza_gradini": true, "ascensore": true, "parcheggio_disabili": true, "mediazione_linguistica": ["en", "ar", "zh", "es"], "percorso_tattile": true},
+    "fbf": {"nome": "Presidio Fatebenefratelli (dati simulati)", "ingresso_senza_gradini": true, "ascensore": true, "parcheggio_disabili": false, "mediazione_linguistica": ["en", "es"], "percorso_tattile": false},
+    "cdc_loreto": {"nome": "Casa di Comunità Loreto (simulata)", "ingresso_senza_gradini": false, "ascensore": true, "parcheggio_disabili": false, "mediazione_linguistica": ["ar", "uk"], "percorso_tattile": false}
+  }
+}

@@ -1,0 +1,32 @@
+# Segreti: MAI su GitHub
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Riepiloghi locali di scripts/sync.py
+.ai/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Editor e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Impostazioni locali degli strumenti AI
+.claude/settings.local.json

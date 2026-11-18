@@ -1,0 +1,17 @@
+{
+  "public_url": "http://localhost:9000",
+  "max_hops": 4,
+  "audit_path": "gateway_audit.jsonl",
+  "agents": [
+    {"name": "accessibility", "agent_id": "mach:accessibility", "upstream": "http://localhost:8003"},
+    {"name": "mobility", "agent_id": "mach:mobility", "upstream": "http://localhost:8002"},
+    {"name": "healthcare", "agent_id": "mach:healthcare", "upstream": "http://localhost:8001",
+     "published_skills": ["orienta", "cerca_disponibilita", "prenota"]}
+  ],
+  "teams": [
+    {"team": "team-demo", "api_key": "demo-key-cambiami", "rate_per_min": 120,
+     "scopes": ["mach:accessibility:*", "mach:mobility:*", "mach:healthcare:*"]},
+    {"team": "team-b", "api_key_env": "TEAM_B_API_KEY", "rate_per_min": 60,
+     "scopes": ["mach:accessibility:*", "mach:healthcare:orienta", "mach:healthcare:prenota"]}
+  ]
+}

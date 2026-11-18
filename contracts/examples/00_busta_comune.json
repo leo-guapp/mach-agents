@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.1",
+  "agent": { "id": "mach:mobility", "domain": "mobility", "version": "0.3.0" },
+  "trace_id": "tr-7f3a",
+  "subtask_id": "subtask-2",
+  "skill": "percorso",
+  "generated_at": "2026-11-21T10:02:15Z",
+  "status": "SUCCESS",
+  "confidence": 1.0,
+  "ttl_seconds": 300,
+  "provenance": [
+    { "source": "ATM", "channel": "api", "fetched_at": "2026-11-21T10:02:11Z", "stale": false, "simulated": false }
+  ],
+  "data": {},
+  "actions": [],
+  "suggested_followups": [],
+  "errors": [],
+  "user_message": { "lang": "it", "text": "...", "easy_read": "..." }
+}

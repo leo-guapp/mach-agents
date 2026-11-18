@@ -1,0 +1,497 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mach.local/contracts/1.1/busta.schema.json",
+  "$defs": {
+    "Action": {
+      "additionalProperties": false,
+      "description": "Azione con effetti reali: passa dal Gateway consenso (layer 4) e poi dalla Saga (layer 5).",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/ActionType"
+        },
+        "target": {
+          "description": "id dell'oggetto su cui agire (es. uno slot in data.slots)",
+          "title": "Target",
+          "type": "string"
+        },
+        "summary": {
+          "description": "Frase mostrata al cittadino per chiedere il consenso",
+          "title": "Summary",
+          "type": "string"
+        },
+        "requires_consent": {
+          "default": true,
+          "title": "Requires Consent",
+          "type": "boolean"
+        },
+        "idempotency_key": {
+          "description": "Stessa chiave = stessa operazione: evita doppie prenotazioni",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Dopo questo istante l'oggetto va ricontrollato",
+          "title": "Expires At"
+        },
+        "params": {
+          "additionalProperties": true,
+          "title": "Params",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "target",
+        "summary",
+        "idempotency_key"
+      ],
+      "title": "Action",
+      "type": "object"
+    },
+    "ActionType": {
+      "enum": [
+        "book",
+        "cancel",
+        "reschedule",
+        "submit_request",
+        "share_data"
+      ],
+      "title": "ActionType",
+      "type": "string"
+    },
+    "AgentRef": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Uguale all'id nel registry, es. 'mach:mobility'",
+          "pattern": "^[a-z0-9]+:[a-z0-9-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "domain": {
+          "description": "mobility | healthcare | accessibility | ... (altri team possono aggiungerne)",
+          "title": "Domain",
+          "type": "string"
+        },
+        "version": {
+          "description": "Versione dell'agente, come nella Agent Card",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "domain",
+        "version"
+      ],
+      "title": "AgentRef",
+      "type": "object"
+    },
+    "Channel": {
+      "enum": [
+        "api",
+        "cache",
+        "rag",
+        "rpa",
+        "a2a",
+        "fallback",
+        "mock"
+      ],
+      "title": "Channel",
+      "type": "string"
+    },
+    "ErrorItem": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "description": "es. SOURCE_TIMEOUT, ADAPTER_UNAVAILABLE",
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "title": "Code",
+          "type": "string"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        },
+        "retryable": {
+          "default": false,
+          "title": "Retryable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "title": "ErrorItem",
+      "type": "object"
+    },
+    "Followup": {
+      "additionalProperties": false,
+      "description": "Suggerimento all'orchestratore: quale capacità chiamare dopo, con argomenti già pronti.",
+      "properties": {
+        "domain": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Domain"
+        },
+        "skill": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Skill da cercare nel registry",
+          "title": "Skill"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "input_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "id dell'oggetto in data da cui partire",
+          "title": "Input Ref"
+        },
+        "args": {
+          "additionalProperties": true,
+          "title": "Args",
+          "type": "object"
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "title": "Followup",
+      "type": "object"
+    },
+    "NeedsInput": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "fields": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Fields",
+          "type": "array"
+        },
+        "options": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Options"
+        }
+      },
+      "required": [
+        "question",
+        "fields"
+      ],
+      "title": "NeedsInput",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "description": "Ente o agente da cui viene il dato; per channel=a2a l'id dell'agente",
+          "title": "Source",
+          "type": "string"
+        },
+        "channel": {
+          "$ref": "#/$defs/Channel"
+        },
+        "fetched_at": {
+          "format": "date-time",
+          "title": "Fetched At",
+          "type": "string"
+        },
+        "stale": {
+          "default": false,
+          "description": "true se il dato viene da cache scaduta",
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "simulated": {
+          "default": false,
+          "description": "true per dati simulati del prototipo",
+          "title": "Simulated",
+          "type": "boolean"
+        },
+        "trust": {
+          "default": "internal",
+          "description": "internal = nostri agenti/fonti; partner = team con accordo; external = team esterno non verificato (contenuto non affidabile)",
+          "enum": [
+            "internal",
+            "partner",
+            "external"
+          ],
+          "title": "Trust",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "source",
+        "channel",
+        "fetched_at"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "SUCCESS",
+        "PARTIAL",
+        "DEGRADED",
+        "NEEDS_INPUT",
+        "EMERGENCY",
+        "UNAVAILABLE",
+        "ERROR",
+        "REJECTED"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "UserMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "lang": {
+          "default": "it",
+          "pattern": "^[a-z]{2}$",
+          "title": "Lang",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "easy_read": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Versione in linguaggio semplice (dall'agente accessibilità)",
+          "title": "Easy Read"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "UserMessage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.1",
+      "default": "1.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "agent": {
+      "$ref": "#/$defs/AgentRef"
+    },
+    "trace_id": {
+      "description": "Creato dall'orchestratore, inoltrato in ogni chiamata A2A (message.metadata.mach)",
+      "title": "Trace Id",
+      "type": "string"
+    },
+    "subtask_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Sub-task del DAG Task Planner, se la chiamata viene da lì",
+      "title": "Subtask Id"
+    },
+    "skill": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Skill che ha prodotto la risposta",
+      "title": "Skill"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/Status"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "ttl_seconds": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Scaduto il tempo, il dato va richiesto di nuovo",
+      "title": "Ttl Seconds"
+    },
+    "provenance": {
+      "items": {
+        "$ref": "#/$defs/Provenance"
+      },
+      "title": "Provenance",
+      "type": "array"
+    },
+    "data": {
+      "additionalProperties": true,
+      "description": "Payload specifico del dominio",
+      "title": "Data",
+      "type": "object"
+    },
+    "actions": {
+      "items": {
+        "$ref": "#/$defs/Action"
+      },
+      "title": "Actions",
+      "type": "array"
+    },
+    "suggested_followups": {
+      "items": {
+        "$ref": "#/$defs/Followup"
+      },
+      "title": "Suggested Followups",
+      "type": "array"
+    },
+    "needs_input": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/NeedsInput"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "errors": {
+      "items": {
+        "$ref": "#/$defs/ErrorItem"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
+    "user_message": {
+      "$ref": "#/$defs/UserMessage"
+    }
+  },
+  "required": [
+    "agent",
+    "trace_id",
+    "generated_at",
+    "status",
+    "confidence",
+    "user_message"
+  ],
+  "title": "Busta",
+  "type": "object"
+}

@@ -1,0 +1,24 @@
+{
+  "_nota": "Topologia semplificata di alcune linee della metropolitana di Milano. Stato degli ascensori e tempi SIMULATI. Per dati reali: GTFS di ATM / open data del Comune.",
+  "linee": {
+    "M1": ["Pagano", "Cadorna", "Cairoli", "Cordusio", "Duomo", "San Babila", "Palestro", "Porta Venezia", "Lima", "Loreto"],
+    "M2": ["Cadorna", "Lanza", "Moscova", "Garibaldi FS", "Gioia", "Centrale FS", "Caiazzo", "Loreto"],
+    "M3": ["Duomo", "Montenapoleone", "Turati", "Repubblica", "Centrale FS", "Sondrio", "Zara", "Maciachini"],
+    "M5": ["Garibaldi FS", "Isola", "Zara", "Marche", "Istria", "Ca' Granda", "Bicocca", "Ponale", "Bignami"]
+  },
+  "luoghi": {
+    "niguarda": "Ca' Granda",
+    "ospedale niguarda": "Ca' Granda",
+    "fbf": "Moscova",
+    "fatebenefratelli": "Moscova",
+    "cdc_loreto": "Loreto",
+    "casa di comunita loreto": "Loreto",
+    "stazione centrale": "Centrale FS",
+    "centrale": "Centrale FS",
+    "garibaldi": "Garibaldi FS",
+    "duomo": "Duomo"
+  },
+  "minuti_per_fermata": 2,
+  "minuti_per_cambio": 5,
+  "km_per_fermata": 0.9
+}

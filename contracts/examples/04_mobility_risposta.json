@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.1",
+  "agent": { "id": "mach:mobility", "domain": "mobility", "version": "0.3.0" },
+  "trace_id": "tr-7f3a",
+  "subtask_id": "subtask-2",
+  "skill": "percorso",
+  "generated_at": "2026-11-21T10:02:15Z",
+  "status": "PARTIAL",
+  "confidence": 0.7,
+  "ttl_seconds": 300,
+  "provenance": [
+    { "source": "ATM", "channel": "api", "fetched_at": "2026-11-21T10:02:11Z", "stale": false, "simulated": true },
+    { "source": "mach:accessibility", "channel": "a2a", "fetched_at": "2026-11-21T10:02:13Z", "stale": false, "simulated": false }
+  ],
+  "data": {
+    "query": {
+      "origin": { "label": "Stazione Centrale", "lat": 45.4864, "lon": 9.2045 },
+      "destination": { "label": "Poliambulatorio Esempio (simulato)", "lat": 45.4880, "lon": 9.2170, "ref": "fac-12" },
+      "depart_at": "2026-11-21T10:30:00Z",
+      "profile_tags": ["wheelchair", "lang:en"]
+    },
+    "ranking_criteria": ["barriers", "duration", "cost"],
+    "options": [
+      {
+        "id": "mob-opt-2",
+        "rank": 1,
+        "profile_fit": "ok",
+        "duration_min": 23,
+        "cost_eur": 2.2,
+        "transfers": 0,
+        "co2_saved_g": 250,
+        "legs": [
+          { "mode": "bus", "line": "BUS-ESEMPIO", "from": "Centrale FS (piazza Duca d'Aosta)", "to": "Loreto",
+            "depart_at": "2026-11-21T10:38:00Z", "arrive_at": "2026-11-21T10:50:00Z", "duration_min": 12, "realtime": true },
+          { "mode": "walk", "from": "Loreto", "to": "Poliambulatorio Esempio", "distance_m": 200, "duration_min": 3 }
+        ],
+        "accessibility": { "verification": "partial", "step_free": "yes", "issues": [], "source": "mach:accessibility" },
+        "alerts": []
+      },
+      {
+        "id": "mob-opt-1",
+        "rank": 2,
+        "profile_fit": "blocked",
+        "duration_min": 16,
+        "cost_eur": 2.2,
+        "transfers": 0,
+        "co2_saved_g": 250,
+        "legs": [
+          { "mode": "metro", "line": "M2", "from": "Centrale FS", "to": "Loreto",
+            "depart_at": "2026-11-21T10:34:00Z", "arrive_at": "2026-11-21T10:41:00Z", "duration_min": 7, "realtime": true },
+          { "mode": "walk", "from": "Loreto", "to": "Poliambulatorio Esempio", "distance_m": 350, "duration_min": 5 }
+        ],
+        "accessibility": {
+          "verification": "verified",
+          "step_free": "no",
+          "issues": [ { "code": "ELEVATOR_DOWN", "where": "Loreto", "severity": "blocking", "since": "2026-11-21T07:00:00Z" } ],
+          "source": "mach:accessibility"
+        },
+        "alerts": []
+      }
+    ]
+  },
+  "actions": [],
+  "suggested_followups": [],
+  "errors": [ { "code": "SOURCE_TIMEOUT", "source": "Avvisi rete ATM", "message": "Avvisi su scioperi e cantieri non verificati", "retryable": true } ],
+  "user_message": {
+    "lang": "en",
+    "text": "I found 2 routes. I suggest the bus: the lift at Loreto metro station is out of service.",
+    "easy_read": "Take the bus. The lift at Loreto metro is broken."
+  }
+}

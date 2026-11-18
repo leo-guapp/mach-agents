@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.1",
+  "agent": { "id": "mach:healthcare", "domain": "healthcare", "version": "0.2.0" },
+  "trace_id": "tr-7f3a",
+  "subtask_id": "subtask-1",
+  "skill": "cerca_disponibilita",
+  "generated_at": "2026-11-21T10:01:05Z",
+  "status": "NEEDS_INPUT",
+  "confidence": 1.0,
+  "ttl_seconds": null,
+  "provenance": [],
+  "data": {},
+  "actions": [],
+  "suggested_followups": [],
+  "needs_input": {
+    "question": "Hai già una prescrizione (ricetta) del medico per questa visita?",
+    "fields": ["prescription"],
+    "options": ["sì", "no"]
+  },
+  "errors": [],
+  "user_message": { "lang": "it", "text": "Hai già una prescrizione (ricetta) del medico per questa visita?" }
+}

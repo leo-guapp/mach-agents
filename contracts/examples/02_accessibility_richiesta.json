@@ -1,0 +1,50 @@
+{
+  "role": "ROLE_USER",
+  "messageId": "msg-mob-0042",
+  "contextId": "tr-7f3a",
+  "metadata": {
+    "mach": {
+      "trace_id": "tr-7f3a",
+      "hops": 1,
+      "caller": "mach:mobility",
+      "on_behalf_of": "anon-7"
+    }
+  },
+  "parts": [
+    {
+      "data": {
+        "skill": "verify_accessibility",
+        "args": {
+          "profile_tags": [
+            "wheelchair",
+            "lang:en"
+          ],
+          "consent": true,
+          "items": [
+            {
+              "ref_id": "mob-opt-1",
+              "ref_type": "route",
+              "stops": [
+                "Centrale FS",
+                "Loreto"
+              ]
+            },
+            {
+              "ref_id": "mob-opt-2",
+              "ref_type": "route",
+              "stops": [
+                "Centrale FS (piazza Duca d'Aosta)",
+                "Loreto"
+              ]
+            },
+            {
+              "ref_id": "fac-12",
+              "ref_type": "facility"
+            }
+          ]
+        }
+      },
+      "mediaType": "application/json"
+    }
+  ]
+}
