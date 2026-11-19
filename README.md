@@ -3,6 +3,7 @@
 Livello di comunicazione (A2A + indice federato stile NANDA), gateway per gli altri team e agenti di servizio (layer 3) per il Milano Agentic City Hackathon.
 
 Da leggere, in quest'ordine:
+0. **[docs/HACKATHON_PLAYBOOK.md](docs/HACKATHON_PLAYBOOK.md)**: cosa ci chiederanno (whitepaper WG4) e cosa fare il giorno 1.
 1. **[GUIDA.md](GUIDA.md)**: i concetti (A2A, discovery, MCP, contratto degli agenti).
 2. **[docs/ARCHITETTURA_INTEROP.md](docs/ARCHITETTURA_INTEROP.md)**: come parliamo con gli altri team e perché.
 3. **[docs/PROTOCOLLO_MACH.md](docs/PROTOCOLLO_MACH.md)**: le regole del profilo MACH, da passare agli altri team.
@@ -13,9 +14,18 @@ Da leggere, in quest'ordine:
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"            # httpx, starlette, uvicorn, pydantic, pytest
-python -m pytest -q                # 68 test, senza rete né LLM
-python scripts/run_local.py        # registry :8000 + agenti :8001-8003 + gateway :9000
+python -m pytest -q                # 79 test, senza rete né LLM
+python scripts/run_local.py        # registry :8000 + agenti :8001-8004 + gateway :9000
 python scripts/demo_scenario.py    # in un altro terminale: la pratica completa
+```
+
+Prova generale del nodo di Milano (NANDA Index finto, registrazione, risoluzione firmata, discovery, delega):
+
+```bash
+python scripts/fake_milan_node.py  # NANDA Index v2 locale :8300
+python scripts/fake_team_b.py
+python scripts/demo_milano.py      # oppure --index <URL del nodo vero>
+python scripts/register_nanda.py --index <URL> --check   # il giorno dell'hackathon
 ```
 
 Prova di interoperabilità con un team finto (agente A2A, API REST e indice in processi separati):
@@ -34,8 +44,13 @@ Per usare Gemma 4: copia `.env.example` in `.env` e imposta `LLM_BASE_URL` e `LL
 ```
 a2a_lite/        protocollo A2A 1.0 (+ compatibilità 0.3): tipi, server, client
 registry/        indice federato stile NANDA: AgentFacts, discovery, peer di altri team, /index.json, eventi
-gateway/         A2A Gateway inbound: API key per team, scope, quote, hop limit, card pubbliche, audit
+gateway/         A2A Gateway inbound: API key per team, scope, quote, hop limit, card pubbliche, audit,
+                 AI Catalog (/.well-known/ai-catalog.json), did.json, AgentFacts VC e AgentAddr firmati
+nanda/           compatibilità con lo stack NANDA: catalog (AI Catalog, URN), signing (Ed25519, VC, AgentAddr),
+                 index_client (NANDA Index v2: registrazione, resolve, search), local_index (nodo finto), town (YAML)
 interop/
+  negotiation.py contract-net (bando → offerte → aggiudicazione) e offerte alternate sul prezzo
+  nanda_bridge.py adattatore testo→testo per kit "a template"
   mach.py        profilo MACH: metadata.mach (trace_id, hops, consenso), claims firmati, scope
   policy.py      gate dati: cosa può uscire verso quale team (minimizzazione, consenso)
   foreign.py     spoke esterno: delega A2A → API documentata → escalation, risultati marcati "external"
@@ -49,7 +64,10 @@ agents/
   health/        Agente Sanità: orienta, cerca_disponibilita, prenota (idempotente), emergenza 112
   mobility/      Agente Mobilità: percorso (senza barriere), segnala_evento, stato_rete
   accessibility/ Agente Accessibilità: accessibilita_sede, profilo_bisogni (con consenso), semplifica
-scripts/         run_local.py, demo_scenario.py, fake_team_b.py, demo_interop.py
+  environment/   Agente Ambiente: impronta_spostamento, confronta_mezzi (chiede il percorso a Mobilità), budget_carbonio
+  mcp_export.py  espone le skill di un agente come server MCP
+scripts/         run_local.py, demo_scenario.py, fake_team_b.py, demo_interop.py,
+                 fake_milan_node.py, register_nanda.py, demo_milano.py, nandatown_records.py
 docs/            architettura di interoperabilità, profilo MACH
 tests/           protocollo, contratto, sistema completo, interoperabilità tra team
 ```

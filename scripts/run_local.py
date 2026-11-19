@@ -5,6 +5,7 @@
     -> sanità         http://localhost:8001
     -> mobilità       http://localhost:8002
     -> accessibilità  http://localhost:8003
+    -> ambiente       http://localhost:8004
     -> gateway        http://localhost:9000   (porta per gli altri team: /agents/<nome>/)
 
 Gateway e agenti condividono MACH_GATEWAY_SECRET (generato qui se non è nel .env):
@@ -26,6 +27,7 @@ PROCS = [
     [sys.executable, "-m", "agents.health.agent", "--port", "8001", "--registry", REGISTRY],
     [sys.executable, "-m", "agents.mobility.agent", "--port", "8002", "--registry", REGISTRY],
     [sys.executable, "-m", "agents.accessibility.agent", "--port", "8003", "--registry", REGISTRY],
+    [sys.executable, "-m", "agents.environment.agent", "--port", "8004", "--registry", REGISTRY],
     [sys.executable, "-m", "uvicorn", "gateway.server:create_app", "--factory", "--port", "9000",
      "--log-level", "warning"],
 ]

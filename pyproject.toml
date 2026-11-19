@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Livello di comunicazione e agenti di servizio per il Milano Agentic City Hackathon"
 requires-python = ">=3.11"
 dependencies = [
+    "cryptography>=42",
+    "pyyaml>=6",
     "httpx>=0.27",
     "starlette>=0.37",
     "uvicorn>=0.30",
@@ -24,7 +26,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["a2a_lite*", "registry*", "agents*", "contracts*", "interop*", "gateway*"]
+include = ["a2a_lite*", "registry*", "agents*", "contracts*", "interop*", "gateway*", "nanda*"]
 
 [tool.setuptools.package-data]
 agents = ["*/data.json"]

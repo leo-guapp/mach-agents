@@ -39,7 +39,7 @@ from typing import Any, Callable
 from pydantic import ValidationError, create_model
 
 from a2a_lite import (A2AClient, A2AServer, AgentCapabilities, AgentCard, AgentExtension, AgentInterface,
-                      AgentProvider, AgentSkill, Reply, Task, TaskContext, TaskState)
+                      AgentProvider, AgentSkill, Message, Reply, Task, TaskContext, TaskState, TaskStatus)
 from a2a_lite._http import httpx
 from contracts.adapter import busta_from_esito
 from contracts.models import AgentRef
@@ -68,6 +68,18 @@ def skill(id: str, name: str, description: str, tags: list[str] | None = None,
                      "public": public}
         return fn
     return deco
+
+
+@dataclass
+class InvokeResult:
+    """Risultato di BaseAgent.invoke: stato A2A, id del task (per continuare) e Busta."""
+    task_id: str
+    state: str
+    busta: dict[str, Any]
+
+    @property
+    def text(self) -> str:
+        return (self.busta.get("user_message") or {}).get("text", "")
 
 
 @dataclass
@@ -122,6 +134,7 @@ class BaseAgent:
         self.tools = ToolRegistry()
         self._pending: dict[str, tuple[str, dict[str, Any]]] = {}   # task in attesa -> (skill, argomenti)
         self._last_missing: dict[str, list[str]] = {}                # task in attesa -> campi richiesti
+        self._local_tasks: dict[str, Task] = {}                       # task aperti via invoke()
         self._skills: dict[str, SkillSpec] = {}
         for _, member in inspect.getmembers(self, predicate=inspect.ismethod):
             meta = getattr(member, "_skill", None)
@@ -206,6 +219,26 @@ class BaseAgent:
             self._pending[ctx.task_id] = (skill_id, args)
             self._last_missing[ctx.task_id] = esito.mancanti
         return self.reply(esito, ctx, skill_id)
+
+    # ------------------------------------------------------------------ esecuzione senza rete
+    async def invoke(self, skill_id: str | None = None, args: dict[str, Any] | None = None, *,
+                     text: str | None = None, metadata: dict[str, Any] | None = None,
+                     task_id: str | None = None) -> InvokeResult:
+        """Esegue l'agente direttamente, senza HTTP: lo usano l'export MCP, il ponte verso
+        l'adapter NANDA e i test. Con task_id si risponde a un INPUT_REQUIRED precedente."""
+        data = {"skill": skill_id, "args": args or {}} if skill_id else None
+        msg = Message.user(text, data, metadata=metadata)
+        prev = self._local_tasks.get(task_id) if task_id else None
+        task = prev or Task(status=TaskStatus(state=TaskState.WORKING), history=[])
+        msg.task_id, msg.context_id = task.id, task.context_id
+        task.history = (task.history or []) + [msg]
+        reply = await self.handle(TaskContext(task=task, message=msg, is_continuation=prev is not None))
+        task.status = TaskStatus(state=reply.state)
+        if reply.state.interrupted:
+            self._local_tasks[task.id] = task
+        else:
+            self._local_tasks.pop(task.id, None)
+        return InvokeResult(task.id, reply.state.value, dict(reply.data or {}))
 
     # ------------------------------------------------------------------ profilo MACH
     def mach_context(self, ctx: TaskContext) -> MachContext:
