@@ -229,7 +229,7 @@ Gli agenti si registrano da soli all'avvio e mandano l'heartbeat (`agents/base.p
 ---
 
 ### 3.5 Aggiornamento del 18/11: indice federato e gateway
-Il registry ora importa gli indici degli altri team (`POST /peers`, `POST /import`) e marca ogni agente con `origin` e `trust`. Pubblica anche `/index.json`, che gli altri possono importare. Gli altri team raggiungono i nostri sub-agenti direttamente, tramite il gateway: `<gateway>/agents/<nome>/`. Dettagli e motivazioni in `docs/ARCHITETTURA_INTEROP.md`.
+Il registry ora importa gli indici degli altri team (`POST /peers`, `POST /import`) e marca ogni agente con `origin` e `trust`. Pubblica anche `/index.json`, che gli altri possono importare. Gli altri team raggiungono i nostri sub-agenti direttamente, tramite il gateway: `<gateway>/agents/<nome>/`. Dettagli e motivazioni in `docs/ARCHITETTURA.md`.
 
 ## 4. MCP contro A2A: quando un tool, quando un agente
 
@@ -327,7 +327,7 @@ Gemma 4 esiste in cinque taglie: E2B, E4B, 12B, 26B A4B (MoE) e 31B. Ha function
 
 ## 10. Aggiornamento del 19/11: whitepaper e stack NANDA reale
 
-Il whitepaper chiarisce che all'hackathon si lavora sul **nodo di Milano**, un server con il NANDA Index. Cosa abbiamo aggiunto e perché (dettagli operativi in [docs/HACKATHON_PLAYBOOK.md](docs/HACKATHON_PLAYBOOK.md)):
+Il whitepaper chiarisce che all'hackathon si lavora sul **nodo di Milano**, un server con il NANDA Index. Cosa abbiamo aggiunto e perché (dettagli operativi in [HACKATHON_PLAYBOOK.md](HACKATHON_PLAYBOOK.md)):
 
 - **Tre livelli di indirizzo.** Il NANDA Index v2 non contiene gli agenti uno per uno: contiene *organizzazioni* (`urn:ai:domain:team-mach.example`) con un `registry_url`. Il registry (per noi: il gateway) espone un **AI Catalog** (`/.well-known/ai-catalog.json`, voci `urn:air:<dominio>:agent:<nome>`) che punta alle **Agent Card** A2A. Risolvere un agente = Index → catalogo → card → endpoint (`NandaIndexClient.resolve_agent`).
 - **Identità verificabile.** Il whitepaper descrive un **AgentAddr** firmato e minuscolo (<120 byte: id, nome, URL degli AgentFacts, TTL) e gli **AgentFacts** come **Verifiable Credential** firmata. Noi firmiamo entrambi con Ed25519 (`nanda/signing.py`); la chiave pubblica è in `/.well-known/did.json` (`did:web`). Chi ci chiama può verificare che la card non sia stata manomessa.

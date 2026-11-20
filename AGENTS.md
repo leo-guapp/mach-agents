@@ -13,11 +13,16 @@ Linguaggio: Python. LLM previsto: Gemma 4 tramite API compatibile OpenAI.
 | Cartella | Contenuto |
 |---|---|
 | `a2a_lite/` | implementazione A2A: server, client, tipi, errori |
-| `agents/` | `BaseAgent`, tool, client LLM, agenti di servizio |
-| `registry/` | registry in stile NANDA (server, client, AgentFacts) |
-| `scripts/` | avvio locale, `sync.py` |
-| `tests/` | test pytest |
-| `docs/` | guide (A2A, git) |
+| `agents/` | `BaseAgent`, tool, client LLM, i 4 agenti di servizio (sanità, mobilità, accessibilità, ambiente), export MCP |
+| `registry/` | registry federato in stile NANDA (server, client, AgentFacts) |
+| `contracts/` | formato delle risposte (Busta 1.1): modelli, JSON Schema, esempi |
+| `gateway/` | porta d'ingresso per gli altri team: API key, scope, quote, AI Catalog, firme |
+| `nanda/` | stack NANDA: registrazione sull'Index, AI Catalog, firme Ed25519, nodo finto |
+| `interop/` | profilo MACH, gate dati, chiamate verso altri team, negoziazione, bridge testo→testo |
+| `scripts/` | `run_local.py` (avvia tutto), `sync.py`, `demo_scenario.py`, registrazione NANDA |
+| `scripts/prove/` | piano B: nodo NANDA finto, team finto e relative demo |
+| `tests/` | test pytest (79, senza rete né LLM) |
+| `docs/` | playbook, guida ai concetti, architettura, profilo MACH, guida git |
 
 Chi è responsabile di cosa e cosa è in corso: vedi `STATO.md`.
 

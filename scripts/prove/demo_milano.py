@@ -2,17 +2,17 @@
 
 In tre terminali:
     python scripts/run_local.py          # noi (registry, 4 agenti, gateway :9000)
-    python scripts/fake_milan_node.py    # finto NANDA Index :8300 (o usate quello vero con --index)
-    python scripts/fake_team_b.py        # un altro team :8101
+    python scripts/prove/fake_milan_node.py    # finto NANDA Index :8300 (o usate quello vero con --index)
+    python scripts/prove/fake_team_b.py        # un altro team :8101
 Poi:
-    python scripts/demo_milano.py [--index http://localhost:8300]
+    python scripts/prove/demo_milano.py [--index http://localhost:8300]
 """
 import argparse
 import asyncio
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from a2a_lite import A2AClient  # noqa: E402
 from a2a_lite._http import httpx  # noqa: E402
