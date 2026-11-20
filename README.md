@@ -3,13 +3,12 @@
 Livello di comunicazione (A2A + indice federato stile NANDA), gateway per gli altri team e agenti di servizio (layer 3) per il Milano Agentic City Hackathon.
 
 Da leggere, in quest'ordine:
-0. **[docs/HACKATHON_PLAYBOOK.md](docs/HACKATHON_PLAYBOOK.md)**: cosa ci chiederanno (whitepaper WG4) e cosa fare il giorno 1.
-1. **[GUIDA.md](GUIDA.md)**: i concetti (A2A, discovery, MCP, contratto degli agenti).
-2. **[docs/ARCHITETTURA_INTEROP.md](docs/ARCHITETTURA_INTEROP.md)**: come parliamo con gli altri team e perché.
+0. **[docs/HACKATHON_PLAYBOOK.md](docs/HACKATHON_PLAYBOOK.md)**: l'evento, cosa ci chiederanno (whitepaper WG4), lo stack NANDA e cosa fare il giorno 1.
+1. **[docs/GUIDA.md](docs/GUIDA.md)**: i concetti (A2A, discovery, MCP, contratto degli agenti).
+2. **[docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)** e [lo schema v2](docs/ARCHITETTURA_SCHEMA_V2.mmd): l'architettura del team, come parliamo con gli altri team e le decisioni prese.
 3. **[docs/PROTOCOLLO_MACH.md](docs/PROTOCOLLO_MACH.md)**: le regole del profilo MACH, da passare agli altri team.
 4. **[contracts/README.md](contracts/README.md)**: il formato delle risposte (Busta 1.1).
-5. **[docs/architettura/ANALISI_V2.md](docs/architettura/ANALISI_V2.md)** e [schema-v2.mmd](docs/architettura/schema-v2.mmd): l'architettura del team e le decisioni prese.
-6. **[docs/CONTESTO_MACH_NANDA.md](docs/CONTESTO_MACH_NANDA.md)**: cosa sappiamo dell'hackathon, del whitepaper e dello stack NANDA.
+5. **[docs/GUIDA-GIT.md](docs/GUIDA-GIT.md)**: come usare Git e GitHub nel team. Lo stato del lavoro è in **[STATO.md](STATO.md)**.
 
 ## Avvio rapido
 
@@ -21,20 +20,20 @@ python scripts/run_local.py        # registry :8000 + agenti :8001-8004 + gatewa
 python scripts/demo_scenario.py    # in un altro terminale: la pratica completa
 ```
 
-Prova generale del nodo di Milano (NANDA Index finto, registrazione, risoluzione firmata, discovery, delega):
+Prova generale del nodo di Milano, con gli script di prova in [scripts/prove/](scripts/prove/README.md) (NANDA Index finto, registrazione, risoluzione firmata, discovery, delega):
 
 ```bash
-python scripts/fake_milan_node.py  # NANDA Index v2 locale :8300
-python scripts/fake_team_b.py
-python scripts/demo_milano.py      # oppure --index <URL del nodo vero>
+python scripts/prove/fake_milan_node.py  # NANDA Index v2 locale :8300
+python scripts/prove/fake_team_b.py
+python scripts/prove/demo_milano.py      # oppure --index <URL del nodo vero>
 python scripts/register_nanda.py --index <URL> --check   # il giorno dell'hackathon
 ```
 
 Prova di interoperabilità con un team finto (agente A2A, API REST e indice in processi separati):
 
 ```bash
-python scripts/fake_team_b.py      # Team B: agente :8101, API :8102, indice :8103
-python scripts/demo_interop.py     # indici federati, chiamate via gateway, delega A2A → API → escalation
+python scripts/prove/fake_team_b.py      # Team B: agente :8101, API :8102, indice :8103
+python scripts/prove/demo_interop.py     # indici federati, chiamate via gateway, delega A2A → API → escalation
 ```
 
 Apri http://localhost:8000 per vedere gli agenti registrati e i messaggi che si scambiano in tempo reale.
@@ -68,9 +67,10 @@ agents/
   accessibility/ Agente Accessibilità: accessibilita_sede, profilo_bisogni (con consenso), semplifica
   environment/   Agente Ambiente: impronta_spostamento, confronta_mezzi (chiede il percorso a Mobilità), budget_carbonio
   mcp_export.py  espone le skill di un agente come server MCP
-scripts/         run_local.py, demo_scenario.py, fake_team_b.py, demo_interop.py,
-                 fake_milan_node.py, register_nanda.py, demo_milano.py, nandatown_records.py
-docs/            playbook, architettura (v2 + interoperabilità), profilo MACH, contesto MACH/NANDA, guida git
+scripts/         run_local.py (avvia tutto), sync.py (aggiorna la repo), demo_scenario.py (demo),
+                 register_nanda.py, nandatown_records.py (registrazione in gara)
+  prove/         piano B senza nodo vero né altri team: fake_milan_node, fake_team_b, demo_milano, demo_interop
+docs/            playbook + contesto, guida ai concetti, architettura (v2 + interoperabilità), profilo MACH, guida git
 tests/           protocollo, contratto, sistema completo, interoperabilità tra team
 ```
 

@@ -1,6 +1,6 @@
 """Un "Team B" finto, per provare l'interoperabilità prima dell'hackathon.
 
-    python scripts/fake_team_b.py
+    python scripts/prove/fake_team_b.py
     -> agente A2A   http://localhost:8101   (Eventi Team B)
     -> API REST     http://localhost:8102   (GET /events?zona=..., documentata)
     -> indice       http://localhost:8103   (il loro registry, con /index.json)
@@ -13,7 +13,7 @@ import asyncio
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import uvicorn  # noqa: E402
 from starlette.applications import Starlette  # noqa: E402

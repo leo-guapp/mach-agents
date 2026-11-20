@@ -7,7 +7,7 @@
 
 | Area | Responsabile | Cartelle |
 |---|---|---|
-| Comunicazione tra agenti (A2A, registry) | Leonardo | `a2a_lite/`, `registry/` |
+| Comunicazione tra agenti (A2A, registry, NANDA, gateway) | Leonardo | `a2a_lite/`, `registry/`, `nanda/`, `gateway/`, `interop/` |
 | Agenti di servizio (layer 3) | Leonardo + ? | `agents/` |
 | Orchestratore (layer 2) | ? | ? |
 | Interfaccia / demo | ? | ? |
@@ -15,7 +15,7 @@
 
 ## In corso (per non pestarsi i piedi)
 
-- Leonardo · compatibilità NANDA, Agente Ambiente, documenti di architettura · `leo/whitepaper-nanda` (PR verso main) · 2026-11-19
+- Claude (per Leonardo) · pulizia della repo: documenti uniti in `docs/`, script di prova in `scripts/prove/` · `claude/pulizia-repo` (PR verso main) · 2026-11-20
 
 ## Decisioni prese
 
@@ -29,6 +29,7 @@
 
 ## Registro modifiche (più recenti in alto)
 
+- 2026-11-20 10:50 · Claude (per Leonardo) · docs, scripts · pulizia: `CONTESTO_MACH_NANDA` unito al playbook; `ARCHITETTURA_INTEROP` + `ANALISI_V2` → `docs/ARCHITETTURA.md` (schema in `docs/ARCHITETTURA_SCHEMA_V2.mmd`); `GUIDA.md` → `docs/GUIDA.md`; script di prova in `scripts/prove/`; tabella cartelle di `AGENTS.md` completata. Codice invariato · IMPATTO: i 4 script di prova ora si lanciano con `python scripts/prove/<nome>.py`; aggiornate i link a `GUIDA.md` e ai documenti spostati
 - 2026-11-20 10:30 · Leonardo (con Claude) · docs · aggiunti analisi e schema dell'architettura v2 (`docs/architettura/`) e il contesto MACH/NANDA dal whitepaper (ramo `leo/whitepaper-nanda`, da unire a `main` con una PR) · IMPATTO: nessuno
 - 2026-11-19 11:30 · Leonardo (con Claude) · nanda, gateway, agents, interop · compatibilità con lo stack NANDA reale (registrazione sull'Index, AI Catalog, AgentFacts/AgentAddr firmati), Agente Ambiente, contract-net, export MCP, prova generale `demo_milano.py`, playbook · IMPATTO: `BaseAgent` ha il nuovo metodo `invoke()` (aggiunta, niente cambia per chi usa le firme esistenti); nuove dipendenze `cryptography`, `pyyaml` → rifare `pip install -e ".[dev]"`
 - 2026-11-18 · Leonardo · repo · creata la repository GitHub con le regole per gli assistenti AI e `scripts/sync.py` · IMPATTO: tutti clonano la repo e lanciano `python scripts/sync.py` a inizio sessione

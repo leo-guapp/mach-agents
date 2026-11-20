@@ -2,9 +2,9 @@
 
 Prima avviate, in due terminali:
     python scripts/run_local.py        # noi: registry :8000, agenti, gateway :9000
-    python scripts/fake_team_b.py      # Team B finto: agente :8101, API :8102, indice :8103
+    python scripts/prove/fake_team_b.py      # Team B finto: agente :8101, API :8102, indice :8103
 Poi:
-    python scripts/demo_interop.py
+    python scripts/prove/demo_interop.py
 
 Mostra le tre direzioni:
   1. indici federati: noi importiamo l'indice del Team B, il Team B importa il nostro;
@@ -17,7 +17,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from a2a_lite import A2AClient, A2AError  # noqa: E402
 from a2a_lite._http import httpx  # noqa: E402

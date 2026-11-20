@@ -5,7 +5,7 @@ vero non è raggiungibile). Differenze rispetto all'originale: niente database, 
 verifica di e-mail o dominio (le organizzazioni diventano subito attive), formati di
 risposta di search/index scelti da noi (il client li legge comunque in modo tollerante).
 
-    python scripts/fake_milan_node.py      # http://localhost:8300
+    python scripts/prove/fake_milan_node.py      # http://localhost:8300
 """
 from __future__ import annotations
 
