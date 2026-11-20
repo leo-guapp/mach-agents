@@ -15,7 +15,7 @@
 
 ## In corso (per non pestarsi i piedi)
 
-- Leonardo · compatibilità NANDA (Index v2, AI Catalog, firme), Agente Ambiente, negoziazione · `leo/whitepaper-nanda` · 2026-11-19
+- Leonardo · compatibilità NANDA, Agente Ambiente, documenti di architettura · `leo/whitepaper-nanda` (PR verso main) · 2026-11-19
 
 ## Decisioni prese
 
@@ -29,5 +29,6 @@
 
 ## Registro modifiche (più recenti in alto)
 
+- 2026-11-20 10:30 · Leonardo (con Claude) · docs · aggiunti analisi e schema dell'architettura v2 (`docs/architettura/`) e il contesto MACH/NANDA dal whitepaper (ramo `leo/whitepaper-nanda`, da unire a `main` con una PR) · IMPATTO: nessuno
 - 2026-11-19 11:30 · Leonardo (con Claude) · nanda, gateway, agents, interop · compatibilità con lo stack NANDA reale (registrazione sull'Index, AI Catalog, AgentFacts/AgentAddr firmati), Agente Ambiente, contract-net, export MCP, prova generale `demo_milano.py`, playbook · IMPATTO: `BaseAgent` ha il nuovo metodo `invoke()` (aggiunta, niente cambia per chi usa le firme esistenti); nuove dipendenze `cryptography`, `pyyaml` → rifare `pip install -e ".[dev]"`
 - 2026-11-18 · Leonardo · repo · creata la repository GitHub con le regole per gli assistenti AI e `scripts/sync.py` · IMPATTO: tutti clonano la repo e lanciano `python scripts/sync.py` a inizio sessione

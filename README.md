@@ -8,6 +8,8 @@ Da leggere, in quest'ordine:
 2. **[docs/ARCHITETTURA_INTEROP.md](docs/ARCHITETTURA_INTEROP.md)**: come parliamo con gli altri team e perché.
 3. **[docs/PROTOCOLLO_MACH.md](docs/PROTOCOLLO_MACH.md)**: le regole del profilo MACH, da passare agli altri team.
 4. **[contracts/README.md](contracts/README.md)**: il formato delle risposte (Busta 1.1).
+5. **[docs/architettura/ANALISI_V2.md](docs/architettura/ANALISI_V2.md)** e [schema-v2.mmd](docs/architettura/schema-v2.mmd): l'architettura del team e le decisioni prese.
+6. **[docs/CONTESTO_MACH_NANDA.md](docs/CONTESTO_MACH_NANDA.md)**: cosa sappiamo dell'hackathon, del whitepaper e dello stack NANDA.
 
 ## Avvio rapido
 
@@ -68,7 +70,7 @@ agents/
   mcp_export.py  espone le skill di un agente come server MCP
 scripts/         run_local.py, demo_scenario.py, fake_team_b.py, demo_interop.py,
                  fake_milan_node.py, register_nanda.py, demo_milano.py, nandatown_records.py
-docs/            architettura di interoperabilità, profilo MACH
+docs/            playbook, architettura (v2 + interoperabilità), profilo MACH, contesto MACH/NANDA, guida git
 tests/           protocollo, contratto, sistema completo, interoperabilità tra team
 ```
 
