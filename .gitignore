@@ -30,3 +30,8 @@ desktop.ini
 
 # Impostazioni locali degli strumenti AI
 .claude/settings.local.json
+
+# Runtime locale del gateway e record generati
+gateway_audit.jsonl
+gateway_signing_key.pem
+town/

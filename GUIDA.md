@@ -324,3 +324,13 @@ Gemma 4 esiste in cinque taglie: E2B, E4B, 12B, 26B A4B (MoE) e 31B. Ha function
 - La ricerca del registry è per parole chiave; se serve, si possono aggiungere gli embedding.
 - Tutti i dati di dominio sono **simulati** (strutture, slot, ascensori, accessibilità delle sedi).
 - La card include anche i campi della 0.3 (`url`, `protocolVersion`) per i client vecchi. Se un client 1.0 molto rigido li rifiuta, si spengono con `card.wire(legacy_fields=False)`.
+
+## 10. Aggiornamento del 19/11: whitepaper e stack NANDA reale
+
+Il whitepaper chiarisce che all'hackathon si lavora sul **nodo di Milano**, un server con il NANDA Index. Cosa abbiamo aggiunto e perché (dettagli operativi in [docs/HACKATHON_PLAYBOOK.md](docs/HACKATHON_PLAYBOOK.md)):
+
+- **Tre livelli di indirizzo.** Il NANDA Index v2 non contiene gli agenti uno per uno: contiene *organizzazioni* (`urn:ai:domain:team-mach.example`) con un `registry_url`. Il registry (per noi: il gateway) espone un **AI Catalog** (`/.well-known/ai-catalog.json`, voci `urn:air:<dominio>:agent:<nome>`) che punta alle **Agent Card** A2A. Risolvere un agente = Index → catalogo → card → endpoint (`NandaIndexClient.resolve_agent`).
+- **Identità verificabile.** Il whitepaper descrive un **AgentAddr** firmato e minuscolo (<120 byte: id, nome, URL degli AgentFacts, TTL) e gli **AgentFacts** come **Verifiable Credential** firmata. Noi firmiamo entrambi con Ed25519 (`nanda/signing.py`); la chiave pubblica è in `/.well-known/did.json` (`did:web`). Chi ci chiama può verificare che la card non sia stata manomessa.
+- **Negoziazione.** Il whitepaper (layer 8–9 di NANDA Town) cita il *contract net* e la contrattazione a offerte alternate. `interop/negotiation.py` implementa entrambi: bando a più agenti in parallelo → punteggio → vincitore; e un accordo sul prezzo che converge o fallisce in un numero limitato di round.
+- **Traccia Ambiente.** Nuovo `EnvironmentAgent`: calcola le emissioni di uno spostamento e, per confrontare i mezzi, **chiede il percorso all'Agente Mobilità via A2A** (esempio concreto di collaborazione tra agenti). I fattori di emissione sono indicativi: sostituirli con dati ISPRA/EEA se disponibili.
+- **Portabilità verso il kit ufficiale.** `agent.invoke(skill, args)` chiama un agente senza HTTP; `interop/nanda_bridge.py` lo trasforma in una funzione testo→testo; `agents/mcp_export.py` espone le skill come tool MCP. Qualunque forma abbia il kit, si scrive solo un sottile adattatore.

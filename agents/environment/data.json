@@ -1,0 +1,15 @@
+{
+  "_nota": "Fattori di emissione INDICATIVI per il prototipo (g CO2e per passeggero-km). Da sostituire con fattori ufficiali (es. ISPRA, EEA) prima di qualsiasi uso reale.",
+  "fattori_g_per_km": {
+    "auto": 170, "taxi": 190, "moto": 110, "auto_elettrica": 60,
+    "bus": 80, "tram": 30, "metro": 30, "treno": 35,
+    "bici": 0, "piedi": 0, "monopattino": 20
+  },
+  "velocita_kmh": {"bici": 15, "piedi": 4.5, "auto": 22, "taxi": 22},
+  "fattore_percorso_stradale": 1.3,
+  "sinonimi": {
+    "macchina": "auto", "automobile": "auto", "metropolitana": "metro", "autobus": "bus",
+    "bicicletta": "bici", "a piedi": "piedi", "camminando": "piedi", "scooter": "moto",
+    "elettrica": "auto_elettrica", "treno": "treno", "passante": "treno"
+  }
+}

@@ -16,6 +16,9 @@ Cosa fa, e quale rilievo della review risolve
   * risposta sempre allo stesso canale: stato del task A2A al chiamante    A
   * audit di ogni chiamata (evento al registry + file JSONL)               22
   * /index.json pubblico: gli altri team possono importarci come peer
+  * AI Catalog compatibile NANDA Index v2 (/.well-known/ai-catalog.json, /agents,
+    /agents/search, /agents/<nome>): il nostro URL è il registry_url per l'Index
+  * AgentFacts firmati (Verifiable Credential), AgentAddr firmati Ed25519 e did:web
 
 Avvio:  MACH_GATEWAY_CONFIG=gateway/config.example.json \\
         uvicorn gateway.server:create_app --factory --port 9000
@@ -39,6 +42,8 @@ from a2a_lite._http import httpx
 from a2a_lite.server import LEGACY_METHODS
 from a2a_lite.types import AgentCard
 from interop import mach
+from nanda.catalog import catalog_document, catalog_entry, search_entries, slug_from_identifier
+from nanda.signing import SigningKey, did_web, make_agentaddr, make_agentfacts_vc
 from registry.agentfacts import agentfacts_from_card
 
 
@@ -70,8 +75,13 @@ class Gateway:
                  secret: str | None = None, max_hops: int = mach.MAX_HOPS,
                  http: "httpx.AsyncClient | None" = None,
                  on_event: Callable[[dict[str, Any]], Awaitable[None]] | None = None,
-                 audit_path: str | None = None, card_cache_s: float = 30.0) -> None:
+                 audit_path: str | None = None, card_cache_s: float = 30.0,
+                 publisher_domain: str | None = None, publisher_name: str | None = None,
+                 signing_key: SigningKey | None = None) -> None:
         self.public_url = public_url.rstrip("/")
+        self.publisher_domain = publisher_domain
+        self.publisher_name = publisher_name or "Team MACH"
+        self.signing_key = signing_key
         self.agents = {a.name: a for a in agents}
         self.teams = {t.api_key: t for t in teams}
         self.secret = secret
@@ -95,20 +105,103 @@ class Gateway:
                 teams.append(TeamConfig(t["team"], key, t.get("scopes", []), t.get("rate_per_min", 60)))
         agents = [UpstreamAgent(a["name"], a["upstream"], a["agent_id"], a.get("published_skills"))
                   for a in cfg.get("agents", [])]
-        return cls(cfg.get("public_url", "http://localhost:9000"), agents, teams,
+        public_url = cfg.get("public_url", "http://localhost:9000")
+        key_path = os.getenv("MACH_SIGNING_KEY") or cfg.get("signing_key_path")
+        signing_key = kw.pop("signing_key", None) or (
+            SigningKey.load_or_create(key_path, did_web(public_url.split("://", 1)[-1].split("/")[0]))
+            if key_path else None)
+        return cls(public_url, agents, teams,
                    secret=os.getenv("MACH_GATEWAY_SECRET") or cfg.get("secret"),
-                   max_hops=cfg.get("max_hops", mach.MAX_HOPS), audit_path=cfg.get("audit_path"), **kw)
+                   max_hops=cfg.get("max_hops", mach.MAX_HOPS), audit_path=cfg.get("audit_path"),
+                   publisher_domain=os.getenv("MACH_PUBLISHER_DOMAIN") or cfg.get("publisher_domain"),
+                   publisher_name=cfg.get("publisher_name"), signing_key=signing_key, **kw)
 
     # ------------------------------------------------------------------ HTTP
     def app(self) -> Starlette:
         return Starlette(routes=[
             Route("/", self._home, methods=["GET"]),
+            Route("/health", lambda r: JSONResponse({"status": "ok", "agents": len(self.agents)}), methods=["GET"]),
             Route("/index.json", self._index, methods=["GET"]),
+            # AI Catalog (hop 2 del NANDA Index v2)
+            Route("/.well-known/ai-catalog.json", self._catalog, methods=["GET"]),
+            Route("/agents", self._catalog, methods=["GET"]),
+            Route("/agents/search", self._catalog_search, methods=["GET"]),
+            # identità verificabile (whitepaper §3.1)
+            Route("/.well-known/did.json", self._did, methods=["GET"]),
+            Route("/agents/{name}/agentfacts.json", self._agentfacts, methods=["GET"]),
+            Route("/f/{name}", self._agentfacts, methods=["GET"]),  # URL breve: AgentAddr sotto i 120 byte
+            Route("/agents/{name}/agentaddr.json", self._agentaddr, methods=["GET"]),
+            # A2A
             Route("/agents/{name}/.well-known/agent-card.json", self._card, methods=["GET"]),
             Route("/agents/{name}/.well-known/agent.json", self._card, methods=["GET"]),
+            Route("/agents/{name}", self._catalog_entry, methods=["GET"]),
             Route("/agents/{name}/", self._proxy, methods=["POST"]),
             Route("/agents/{name}", self._proxy, methods=["POST"]),
         ])
+
+    # ------------------------------------------------------------------ AI Catalog e identità
+    def _card_url(self, name: str) -> str:
+        return f"{self.public_url}/agents/{name}/.well-known/agent-card.json"
+
+    async def catalog_entries(self) -> list[dict[str, Any]]:
+        entries = []
+        for n, a in self.agents.items():
+            try:
+                card = await self.public_card(n)
+            except (httpx.HTTPError, ValueError):
+                continue
+            entries.append(catalog_entry(n, card, self._card_url(n), domain=self.publisher_domain,
+                                         publisher_name=self.publisher_name, agent_id=a.agent_id))
+        return entries
+
+    async def _catalog(self, request: Request) -> JSONResponse:
+        return JSONResponse(catalog_document(await self.catalog_entries(), domain=self.publisher_domain,
+                                             publisher_name=self.publisher_name))
+
+    async def _catalog_search(self, request: Request) -> JSONResponse:
+        found = search_entries(await self.catalog_entries(), request.query_params.get("q"))
+        return JSONResponse(catalog_document(found, domain=self.publisher_domain, publisher_name=self.publisher_name))
+
+    async def _catalog_entry(self, request: Request) -> JSONResponse:
+        name = slug_from_identifier(request.path_params["name"])
+        if name not in self.agents:
+            return JSONResponse({"error": "agente non trovato"}, status_code=404)
+        for e in await self.catalog_entries():
+            if slug_from_identifier(e["identifier"]) == name:
+                return JSONResponse(e)
+        return JSONResponse({"error": "agente momentaneamente non raggiungibile"}, status_code=503)
+
+    async def _did(self, request: Request) -> JSONResponse:
+        if not self.signing_key:
+            return JSONResponse({"error": "firma non configurata (signing_key_path)"}, status_code=404)
+        return JSONResponse(self.signing_key.did_document())
+
+    async def _published_facts(self, name: str) -> dict[str, Any]:
+        a = self.agents[name]
+        card = AgentCard.parse(await self.public_card(name))
+        facts = agentfacts_from_card(card, self._card_url(name), agent_id=a.agent_id,
+                                     origin=self.publisher_domain or "mach")
+        facts.pop("trust", None)  # la fiducia la decide chi legge, non chi pubblica
+        facts["provider"] = {"name": self.publisher_name, "url": self.public_url,
+                             "did": self.signing_key.did if self.signing_key else None}
+        return facts
+
+    async def _agentfacts(self, request: Request) -> JSONResponse:
+        name = request.path_params["name"]
+        if name not in self.agents or not self.signing_key:
+            return JSONResponse({"error": "non disponibile"}, status_code=404)
+        try:
+            facts = await self._published_facts(name)
+        except (httpx.HTTPError, ValueError):
+            return JSONResponse({"error": "agente momentaneamente non raggiungibile"}, status_code=503)
+        return JSONResponse(make_agentfacts_vc(self.signing_key, facts))
+
+    async def _agentaddr(self, request: Request) -> JSONResponse:
+        name = request.path_params["name"]
+        if name not in self.agents or not self.signing_key:
+            return JSONResponse({"error": "non disponibile"}, status_code=404)
+        a = self.agents[name]
+        return JSONResponse(make_agentaddr(self.signing_key, a.agent_id, name, f"{self.public_url}/f/{name}"))
 
     async def _home(self, request: Request) -> JSONResponse:
         return JSONResponse({
@@ -118,6 +211,8 @@ class Gateway:
                         "card_url": f"{self.public_url}/agents/{n}/.well-known/agent-card.json"}
                        for n, a in self.agents.items()],
             "index": f"{self.public_url}/index.json",
+            "ai_catalog": f"{self.public_url}/.well-known/ai-catalog.json",
+            "did": self.signing_key.did if self.signing_key else None,
         })
 
     async def _index(self, request: Request) -> JSONResponse:

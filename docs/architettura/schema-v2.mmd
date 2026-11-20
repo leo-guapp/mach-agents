@@ -1,0 +1,169 @@
+flowchart TB
+ subgraph L1["Layer 1 - User Input & Security"]
+    direction TB
+        UI["User Interface (Multimodale)"]
+        USR(("User"))
+        A2A_In["A2A API Gateway\n(Inbound da altri Team)"]
+        IAM["Identity & Security Module"]
+  end
+ subgraph L2["Layer 2 - Foundation Core"]
+    direction TB
+        Router["Semantic Router"]
+        Planner["DAG Task Planner"]
+        State[("State & Context Manager")]
+  end
+ subgraph Spoke1["Ente 1"]
+    direction TB
+        Agent1["Agente 1"]
+        Rag1[("RAG Ente 1")]
+        Tools1{"Discovery Tools"}
+        API_Read1["Consultazione API"]
+        RPA_Read1["RPA / Web Scraping Internal (API Sniffing & DOM Parsing)"]
+        Fallback_Read1["Discovery Fallback"]
+        Output1(["JSON Formatter\nStatus: SUCCESS o OFFLINE/PANIC"])
+  end
+ subgraph SpokeN["Ente N"]
+    direction TB
+        AgentN["Agent N"]
+        RagN[("RAG Ente N")]
+        ToolsN{"Discovery Tools"}
+        API_ReadN["Consultazione API"]
+        RPA_ReadN["RPA / Web Scraping (Internal API Sniffing & DOM Parsing)"]
+        Fallback_ReadN["Discovery Fallback"]
+        OutputN(["JSON Formatter\nStatus: SUCCESS o OFFLINE/PANIC"])
+  end
+ subgraph ForeignSpoke["Ente Esterno (Foreign Team Cartridge)"]
+    direction TB
+        AgentF["Foreign Agent Adapter"]
+        ToolsF{"Interop Tools"}
+        API_ReadF["Richiamo API Team Esterno\n(Se disponibile)"]
+        RPA_ReadF["RPA su App Team Esterno\n(Zero-API Integration: Internal API Sniffing & DOM Parsing)"]
+        FallbackF["Discovery Fallback\n(Gestione Timeout)"]
+        OutputF(["JSON Formatter\nStatus: SUCCESS o OFFLINE/PANIC"])
+  end
+ subgraph L3["Layer 3 - Network Federato Modulare (Spokes)"]
+    direction LR
+        Spoke1
+        SpokeN
+        ForeignSpoke
+  end
+ subgraph L4["Layer 4 - Consenso Utente e Deliverable"]
+    direction TB
+        Aggregator["Aggregatore multi-dominio"]
+        Comparatore["Matrice dei Trade-off"]
+        Deliverable{"Gateway consenso atomico"}
+  end
+ subgraph L5["5. Esecuzione Resiliente & Fallback"]
+    direction TB
+        Transaction["Saga / Transaction Controller"]
+        API["Integrazione API Moderne"]
+        RPA["RPA Bridge / Web Navigator"]
+        Fallback["Warm Handoff Queue"]
+  end
+
+    %% Input Layer
+    USR --> UI
+    UI --> IAM
+    A2A_In -- "MACH Interop Protocol" --> IAM
+
+    %% Core Orchestration
+    IAM --> Router
+    Router --> Planner
+    Planner -. Legge/Scrive .-> State
+
+    %% Spoke 1
+    Agent1 -.-> Rag1
+    Agent1 --> Tools1
+    Tools1 --> API_Read1
+    API_Read1 -- Successo --> Output1
+    API_Read1 -. Timeout API .-> RPA_Read1
+    RPA_Read1 -- Successo --> Output1
+    RPA_Read1 -. Sito Offline/Rotto .-> Fallback_Read1
+    Fallback_Read1 -. Segnala Errore .-> Output1
+
+    %% Spoke N
+    AgentN -.-> RagN
+    AgentN --> ToolsN
+    ToolsN --> API_ReadN
+    API_ReadN -- Successo --> OutputN
+    API_ReadN -. Timeout API .-> RPA_ReadN
+    RPA_ReadN -- Successo --> OutputN
+    RPA_ReadN -. Sito Offline/Rotto .-> Fallback_ReadN
+    Fallback_ReadN -. Segnala Errore .-> OutputN
+
+    %% Foreign Spoke (Team Esterno)
+    AgentF --> ToolsF
+    ToolsF --> API_ReadF
+    API_ReadF -- Successo --> OutputF
+    API_ReadF -. No API / Timeout .-> RPA_ReadF
+    RPA_ReadF -- Successo --> OutputF
+    RPA_ReadF -. App Offline/Rotta .-> FallbackF
+    FallbackF -. Segnala Errore .-> OutputF
+
+    %% Planner Delegation
+    Planner == "Sub-Task 1" ==> Agent1
+    Planner == "Sub-Task N" ==> AgentN
+    Planner == "Sub-Task (MACH Protocol)" ==> AgentF
+
+    %% Aggregation
+    Output1 == JSON Payload 1 ==> Aggregator
+    OutputN == JSON Payload N ==> Aggregator
+    OutputF == JSON Payload Ext ==> Aggregator
+
+    Aggregator --> Comparatore
+    Comparatore --> Deliverable
+
+    %% Execution
+    Transaction --> API & RPA
+    API -. Timeout/Errore Write .-> RPA
+    RPA -. Fallimento Write .-> Fallback
+    Comparatore -. Richiede Input o Avvisa Ritardo .-> UI
+    Deliverable == Esito Positivo ==> Transaction
+    Deliverable -. Esito Negativo .-> UI
+    API == Conferma Definitiva ==> UI
+
+     %% Class Definitions
+     UI:::edge
+     A2A_In:::edge
+     IAM:::edge
+     Router:::core
+     Planner:::core
+     State:::core
+
+     Agent1:::plugin
+     Rag1:::plugin
+     Tools1:::plugin
+     API_Read1:::plugin
+     RPA_Read1:::plugin
+     Fallback_Read1:::plugin
+     Output1:::plugin
+
+     AgentN:::plugin
+     RagN:::plugin
+     ToolsN:::plugin
+     API_ReadN:::plugin
+     RPA_ReadN:::plugin
+     Fallback_ReadN:::plugin
+     OutputN:::plugin
+
+     AgentF:::plugin
+     ToolsF:::plugin
+     API_ReadF:::plugin
+     RPA_ReadF:::plugin
+     FallbackF:::plugin
+     OutputF:::plugin
+
+     Aggregator:::hitl
+     Comparatore:::hitl
+     Deliverable:::hitl
+
+     Transaction:::exec
+     API:::exec
+     RPA:::exec
+     Fallback:::exec
+
+    classDef edge fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    classDef core fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef plugin fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef hitl fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px,color:#000
+    classDef exec fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000
